@@ -1,0 +1,47 @@
+webService与hessian
+
+服务端：
+webservice
+<jaxws:server id="" serverclass="targetClass" address="targetURL">
+	<jaxws:serviceBean ref="">
+	</jaxws:serviceBean>
+</jaxws:server>
+
+hessian
+<bean name="" class="org.springframework.remote.caucho.HessianServiceExporter">
+	<property name="service">
+		<ref bean="service"></ref>
+	</property>
+	<property name="localService">
+		<value>localServiceUrl</value>
+	</property>
+</bean>
+
+
+客户端：
+webservice
+<jaxws:client id="" class="localService" 
+	address="targetServiceUrl">
+</jaxws:client>
+
+hessian:
+<bean id="" class="org.springframework.remote.caucho.HessianProxyBeanFactory">
+	<property name="targetServiceUrl">
+		<value>${}/com/qhl/service/...</value>
+	</property>
+	<property name="localServiceInterface">
+		<value>com.cc.foresealife...queryPloicyStatusService</value>
+	</property>
+</bean>
+hessian如果使用spring集成，可直接调用接口与实现类
+
+java客户端使用hessian
+String url="http://10.50.83.35:8080/cc/hessian/queryPolicyStatesService";
+HessianProxyFactory bean=new HessianProxyFactory();
+try{
+	QueryPolicyStatusService  service=(QueryPolicyStatusService)bean
+		.create(QueryPolicyStatusService.class, url);
+	String data=service.createQuestionnaire("00020101669408088");
+	}catch (Exception e) {
+ 		 e.printStackTrace();
+	}

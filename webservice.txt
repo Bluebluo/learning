@@ -1,0 +1,87 @@
+webService与hessian
+
+服务端：
+webservice
+<jaxws:server id="" serverclass="targetClass" address="targetURL">
+	<jaxws:serviceBean ref="">
+	</jaxws:serviceBean>
+</jaxws:server>
+
+hessian
+<bean name="" class="org.springframework.remote.caucho.HessianServiceExporter">
+	<property name="service">
+		<ref bean="service"></ref>
+	</property>
+	<property name="localService">
+		<value>localServiceUrl</value>
+	</property>
+</bean>
+
+
+客户端：
+webservice
+<jaxws:client id="" class="localService" 
+	address="targetServiceUrl">
+</jaxws:client>
+
+hessian:
+<bean id="" class="org.springframework.remote.caucho.HessianProxyBeanFactory">
+	<property name="targetServiceUrl">
+		<value>${}/com/qhl/service/...</value>
+	</property>
+	<property name="localServiceInterface">
+		<value>com.cc.foresealife...queryPloicyStatusService</value>
+	</property>
+</bean>
+hessian如果使用spring集成，可直接调用接口与实现类
+
+Java客户端使用webservice
+ String result ="";
+
+//实例化访问对象
+ Service service = new Service();   
+
+//实例化调用对象
+    Call call = (Call) service.createCall();
+
+//在调用对象中添加webservice地址
+    call.setTargetEndpointAddress(new java.net.URL(webServiceURL));  
+
+//在调用对象中添加webservice对应的命名空间，以及将要调用的函数名
+    call.setOperationName(new QName(namespace,operationName));
+
+//设置入参，第一个参数是命名空间以及参数名，这两个参数是采用一个Qname变量打包传入的，第二个参数是入参的类型（字符或者数字）第三个参数是入参种类
+
+//“IN”的含义代表入参
+    call.addParameter(new QName(namespace,"para1"), 
+           org.apache.axis.encoding.XMLType.XSD_STRING, javax.xml.rpc.ParameterMode.IN);
+
+//第二个参数与前面一样
+    call.addParameter(new QName(namespace,"para2"), 
+           org.apache.axis.encoding.XMLType.XSD_STRING, javax.xml.rpc.ParameterMode.IN);
+
+//是否是soapaction这里需要看webservice是否要求如下格式，如果没有要求可以不添加此设置
+
+    call.setUseSOAPAction(true);
+
+//设置返回值格式（字符串或者组装对象）
+    call.setReturnType(org.apache.axis.encoding.XMLType.SOAP_STRING);
+
+//如果前面要求是soapaction的话需要添加下面这句话，用来之中是访问那个命名空间上的那个方法
+    call.setSOAPActionURI(namespace + "/" + operationName);
+
+//调用，参入两个入参para1和para2的值，并且将返回值转换为String类型
+    result = call.invoke(new Object[]{para1,para2}).toString();
+    return result;
+
+
+java客户端使用hessian
+String url="http://10.50.83.35:8080/cc/hessian/queryPolicyStatesService";
+HessianProxyFactory bean=new HessianProxyFactory();
+try{
+	QueryPolicyStatusService  service=(QueryPolicyStatusService)bean
+		.create(QueryPolicyStatusService.class, url);
+	String data=service.createQuestionnaire("00020101669408088");
+	}catch (Exception e) {
+ 		 e.printStackTrace();
+	}

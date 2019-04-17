@@ -1,0 +1,3 @@
+oracle关键字：
+sum()，count() 必定会产生一条记录
+nvl(a,0) a为空，则=0
